@@ -2,14 +2,15 @@
 <html lang="zh-CN">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="HandheldFriendly" content="true">
 <title>工作台</title>
 <meta name="theme-color" content="#F5F5F1">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="工作台">
-<meta name="format-detection" content="telephone=no">
+<meta name="format-detection" content="telephone=no,email=no,address=no">
 <script>
 /* 内联图标：单文件自包含，不依赖外部资源 */
 const ICON_192 = "data:image/png;base64,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";
@@ -69,14 +70,28 @@ const ICON_512 = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAgAAAAIACAYAAAD0
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 [hidden]{display:none !important}
 html,body{margin:0;padding:0}
+html{
+  touch-action:manipulation;            /* 关掉双击缩放 */
+  -webkit-text-size-adjust:100%;text-size-adjust:100%;  /* 横屏/聚焦时不自动放大字号 */
+}
 body{
   background:var(--bg);color:var(--ink);
   font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Noto Sans SC","Microsoft YaHei",sans-serif;
   font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased;
   overscroll-behavior-y:contain;
+  touch-action:manipulation;
 }
-input,button,textarea{font-family:inherit;font-size:16px;color:inherit}
+input,button,textarea,select{font-family:inherit;font-size:16px;color:inherit}
 button{background:none;border:0;padding:0;cursor:pointer}
+/* 按钮类元素：禁止长按选中/拖动，双击不再触发缩放 */
+button,.chip,.rc,.mcell,.cal .d.clk,.arw,.mini,.bdel,.fhead,.ename,.wcol,.db,.tm,.now,.bdate,.daypill button,.sheet-mask,#nav,#top{
+  touch-action:manipulation;
+  -webkit-user-select:none;user-select:none;
+  -webkit-touch-callout:none;
+}
+/* 输入框保持可选可编辑，字号不得低于 16px（低于 16px 时 iOS 聚焦会自动放大页面） */
+input,textarea,select{-webkit-user-select:auto;user-select:auto}
+.inp,.inp.sm{font-size:16px}
 h1,h2,h3,p,ul,li{margin:0;padding:0}
 ul{list-style:none}
 .num{font-variant-numeric:tabular-nums;font-feature-settings:"tnum"}
@@ -171,7 +186,7 @@ ul{list-style:none}
 .inp{width:100%;height:44px;border:1px solid var(--line);border-radius:12px;background:#fff;
   padding:0 13px;font-size:16px;outline:none;transition:.15s}
 .inp:focus{border-color:var(--accent-3);box-shadow:0 0 0 3px rgba(31,111,82,.07)}
-.inp.sm{height:38px;font-size:15px}
+.inp.sm{height:38px;font-size:16px}
 .field{margin-bottom:10px}
 .field label{display:block;font-size:12px;color:var(--ink3);margin-bottom:6px;letter-spacing:.02em}
 .amt{display:flex;align-items:center;gap:8px;border:1px solid var(--line);border-radius:14px;padding:0 14px;height:56px;background:#fff}
@@ -231,6 +246,41 @@ ul{list-style:none}
 .cal .d.pr{border:1px dashed var(--brick);color:var(--brick);opacity:.75}
 .cal .d.today::after{content:"";position:absolute;bottom:3px;width:3px;height:3px;border-radius:50%;background:var(--accent)}
 .cal .d.p.today::after{background:#fff}
+/* 可点日历（选择器） */
+.cal .d.clk{cursor:pointer;transition:transform .12s,background .12s}
+.cal .d.clk:active{transform:scale(.9)}
+.cal .d.mk{background:var(--accent-2);color:var(--accent);font-weight:600}
+.cal .d.mk::after{content:"";position:absolute;bottom:3px;width:3px;height:3px;border-radius:50%;background:var(--accent)}
+.cal .d.sel{background:var(--accent);color:#fff;font-weight:600;box-shadow:0 0 0 2px rgba(31,111,82,.16)}
+.cal .d.sel::after{background:#fff}
+.cal .d.fut{color:var(--line);pointer-events:none}
+.cal .d.p.mk{background:var(--brick);color:#fff}
+.cal .d.p.mk::after{background:#fff}
+/* 月份网格 */
+.mgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:4px}
+.mcell{height:46px;border-radius:12px;border:1px solid var(--line);background:#fff;font-size:13px;color:var(--ink2);transition:.12s}
+.mcell:active{transform:scale(.96)}
+.mcell.on{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600}
+.mcell:disabled{color:var(--line)}
+/* 月份标题按钮 */
+.mnav .mbtn{font-size:15px;font-weight:600;display:inline-flex;align-items:center;gap:5px;padding:7px 11px;border-radius:11px;transition:.12s}
+.mnav .mbtn:active{background:var(--line2)}
+.mnav .mbtn u{text-decoration:none;font-size:10px;line-height:1;color:var(--ink3);opacity:.85;transform:translateY(1px)}
+/* 当天筛选条 */
+.daypill{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:-4px 0 12px;padding:9px 13px;border-radius:12px;background:var(--accent-2);font-size:12.5px;color:var(--accent)}
+.daypill button{font-size:12px;color:var(--accent);opacity:.75;padding:4px 2px}
+/* 打卡「记录到」条 */
+.ckwhen{display:flex;align-items:center;gap:8px;background:#fff;border:1px solid var(--line);
+  border-radius:14px;padding:10px 12px;margin-bottom:12px}
+.ckwhen .db{flex:1;min-width:0;text-align:left;display:flex;flex-direction:column;gap:3px}
+.ckwhen .lbl{font-size:11px;color:var(--ink3);letter-spacing:.04em}
+.ckwhen .db b{font-size:14.5px;font-weight:600;display:flex;align-items:center;gap:5px}
+.ckwhen .db b u{text-decoration:none;font-size:10px;color:var(--ink3);font-weight:400}
+.ckwhen .tm{font-size:14px;font-weight:600;letter-spacing:.01em;padding:7px 11px;border-radius:10px;
+  background:var(--accent-2);color:var(--accent);font-variant-numeric:tabular-nums}
+.ckwhen .tm.none{background:#fff;color:var(--ink3);border:1px dashed var(--line);font-weight:400;font-size:12.5px}
+.ckwhen .now{font-size:12px;color:var(--ink2);padding:7px 9px;border-radius:9px;border:1px solid var(--line);background:#fff}
+.ckwhen .db:active,.ckwhen .tm:active,.ckwhen .now:active{opacity:.65}
 .prec{display:flex;align-items:center;justify-content:space-between;padding:11px 0;border-bottom:1px solid var(--line2);font-size:13.5px}
 .prec:last-child{border-bottom:0}
 .prec .del{font-size:12px;color:var(--brick);padding-left:12px}
@@ -304,12 +354,18 @@ const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
 const pad = n => String(n).padStart(2, '0');
 const ymd = d => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
 const todayStr = () => ymd(new Date());
+const nowHM = () => { const d = new Date(); return `${pad(d.getHours())}:${pad(d.getMinutes())}`; };
 const parseD = s => { const a = s.split('-').map(Number); return new Date(a[0], a[1] - 1, a[2]); };
 const addDays = (s, n) => { const d = parseD(s); d.setDate(d.getDate() + n); return ymd(d); };
 const diffDays = (a, b) => Math.round((parseD(b) - parseD(a)) / 86400000);
 const WD = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
 const fmtMD = s => { const d = parseD(s); return `${d.getMonth() + 1}/${d.getDate()}`; };
 const fmtCN = s => { const d = parseD(s); return `${d.getMonth() + 1}月${d.getDate()}日`; };
+/* 跨年时自动带上年份，避免「2月8日」分不清是哪一年 */
+const fmtCNF = s => {
+  const d = parseD(s);
+  return (d.getFullYear() === new Date().getFullYear() ? '' : d.getFullYear() + '年') + `${d.getMonth() + 1}月${d.getDate()}日`;
+};
 const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
 const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
@@ -375,11 +431,12 @@ function load() {
       if (!e || typeof e !== 'object') { delete m[eid]; return; }
       Object.keys(e).forEach(r => {
         const v = e[r];
-        if (typeof v === 'string') e[r] = { d: v, items: {}, note: '' };
+        if (typeof v === 'string') e[r] = { d: v, t: '', items: {}, note: '' };
         else if (!v || typeof v !== 'object') delete e[r];
         else {
           if (!v.items || typeof v.items !== 'object') v.items = {};
           if (typeof v.note !== 'string') v.note = '';
+          if (typeof v.t !== 'string') v.t = '';
           if (!v.d) v.d = todayStr();
         }
       });
@@ -438,7 +495,7 @@ function ckGet(mk, eid, r) {
   const m = state.checkins[mk];
   const v = m && m[eid] && m[eid][r];
   if (!v) return null;
-  if (typeof v === 'string') return { d: v, items: {}, note: '' };
+  if (typeof v === 'string') return { d: v, t: '', items: {}, note: '' };
   return v;
 }
 function ckEnsure(mk, eid, r) {
@@ -447,7 +504,12 @@ function ckEnsure(mk, eid, r) {
   if (!m[eid]) m[eid] = {};
   if (!m[eid][r] || typeof m[eid][r] !== 'object') {
     const old = m[eid][r];
-    m[eid][r] = { d: typeof old === 'string' ? old : todayStr(), items: {}, note: '' };
+    m[eid][r] = {
+      d: typeof old === 'string' ? old : (ckDate || todayStr()),
+      t: ckTime || '',
+      items: {},
+      note: ''
+    };
   }
   if (!m[eid][r].items) m[eid][r].items = {};
   return m[eid][r];
@@ -479,6 +541,12 @@ function ckStats(mk) {
 }
 function curRound(d = new Date()) {
   const day = d.getDate();
+  return ROUNDS.find(r => day >= r.a && day <= r.b) || ROUNDS[2];
+}
+/* 当前正在录入的那一轮，由「记录到」的日期决定 */
+function activeRound() {
+  const day = Number((ckDate || todayStr()).slice(8, 10));
+  if (!day) return curRound();
   return ROUNDS.find(r => day >= r.a && day <= r.b) || ROUNDS[2];
 }
 /* 按楼层分组，保持 FLOORS 顺序 */
@@ -573,6 +641,8 @@ let ckMonth = mkOf(todayStr());
 let ckFloor = 'all';
 let ckQuery = '';
 let ckOpen = {};
+let ckDate = todayStr();   // 这一笔打卡记录到哪一天
+let ckTime = nowHM();      // 这一笔打卡记录到几点
 let detail = null;
 let studyDate = todayStr();
 let billMonth = mkOf(todayStr());
@@ -582,6 +652,139 @@ let billCat = 'food';
 let billSub = '猫粮';
 let billDraft = { amount: '', note: '', date: todayStr() };
 let pMonth = mkOf(todayStr());
+let billDay = '';
+let picker = null;
+let pDraft = null;
+
+/* ==================== 通用日历选择器 ==================== */
+const PICK_TITLE = { study: '选择学习日期', bill: '选择记账日期', checkin: '选择打卡日期', ckdate: '打卡记录到哪一天', period: '选择日期' };
+
+/* 某月里每天有什么记录，用于在日历上打点 */
+function pickerMarks(kind, mk) {
+  const out = {};
+  if (kind === 'study') {
+    Object.keys(state.study).forEach(d => {
+      if (d.slice(0, 7) !== mk) return;
+      const t = stTotal(d);
+      if (t > 0) out[d] = { n: t, s: dur(t) };
+    });
+  } else if (kind === 'bill') {
+    state.bills.forEach(b => {
+      if (!b.date || b.date.slice(0, 7) !== mk) return;
+      const o = out[b.date] || (out[b.date] = { n: 0, c: 0 });
+      o.n += Number(b.amount) || 0; o.c++;
+    });
+    Object.keys(out).forEach(d => { out[d].s = out[d].c + ' 笔 · ' + money(out[d].n); });
+  } else if (kind === 'checkin') {
+    const m = state.checkins[mk] || {};
+    Object.keys(m).forEach(eid => {
+      const rec = m[eid] || {};
+      Object.keys(rec).forEach(r => {
+        const v = rec[r];
+        const d = v && typeof v === 'object' ? v.d : v;
+        if (!d || d.slice(0, 7) !== mk) return;
+        out[d] = out[d] || { n: 0 };
+        out[d].n++;
+      });
+    });
+    Object.keys(out).forEach(d => { out[d].s = out[d].n + ' 人次打卡'; });
+  }
+  return out;
+}
+
+function pickerMonthHTML() {
+  const y = Number(picker.mk.slice(0, 4));
+  const curM = Number(picker.mk.slice(5, 7));
+  const nowY = Number(todayStr().slice(0, 4));
+  const nowM = Number(todayStr().slice(5, 7));
+  return `
+  <div class="sheet-h"><h3>选择月份</h3><button class="x" data-act="close">关闭</button></div>
+  <div class="mnav" style="margin-bottom:12px">
+    <button class="arw" data-act="pickmy" data-n="-1">‹</button>
+    <div class="m">${y} 年</div>
+    <button class="arw" data-act="pickmy" data-n="1" ${y >= nowY ? 'disabled' : ''}>›</button>
+  </div>
+  <div class="mgrid">
+    ${Array.from({ length: 12 }, (_, i) => i + 1).map(m =>
+      `<button class="mcell ${m === curM ? 'on' : ''}" data-act="pickmon" data-m="${m}"
+        ${y > nowY || (y === nowY && m > nowM) ? 'disabled' : ''}>${m}月</button>`).join('')}
+  </div>
+  <div class="row" style="margin-top:16px">
+    <button class="btn line sm" data-act="pickview">按天选</button>
+    <button class="btn ghost" data-act="close">取消</button>
+  </div>`;
+}
+
+function pickerHTML() {
+  if (picker.view === 'month') return pickerMonthHTML();
+  const { kind, mk, sel } = picker;
+  const [y, m] = mk.split('-').map(Number);
+  const dim = daysInMonth(mk);
+  const startDow = new Date(y, m - 1, 1).getDay();
+  const marks = pickerMarks(kind, mk);
+  const today = todayStr();
+  const isNow = mk >= mkOf(today);
+
+  let cells = '';
+  for (let i = 0; i < startDow; i++) cells += '<div></div>';
+  for (let d = 1; d <= dim; d++) {
+    const ds = `${mk}-${pad(d)}`;
+    let cls = 'd clk';
+    if (marks[ds]) cls += ' mk';
+    if (ds === today) cls += ' today';
+    if (ds === sel) cls += ' sel';
+    if (ds > today) cls += ' fut';
+    cells += `<div class="${cls}" data-act="pickd" data-d="${ds}">${d}</div>`;
+  }
+  const cnt = Object.keys(marks).length;
+
+  return `
+  <div class="sheet-h"><h3>${PICK_TITLE[kind] || '选择日期'}</h3><button class="x" data-act="close">关闭</button></div>
+  <div class="mnav" style="margin-bottom:4px">
+    <button class="arw" data-act="pickm" data-n="-1">‹</button>
+    <button class="mbtn" data-act="pickview">${mkLabel(mk)}<u>▾</u></button>
+    <button class="arw" data-act="pickm" data-n="1" ${isNow ? 'disabled' : ''}>›</button>
+  </div>
+  <div class="cal">
+    ${['日', '一', '二', '三', '四', '五', '六'].map(w => `<div class="h">${w}</div>`).join('')}
+    ${cells}
+  </div>
+  <div class="legend" style="margin-top:14px;flex-wrap:wrap">
+    <div><i style="background:var(--accent-2);border:1px solid var(--accent-3)"></i>有记录</div>
+    <div><i style="background:var(--accent)"></i>已选</div>
+    <div style="margin-left:auto">本月 ${cnt} 天有记录</div>
+  </div>
+  <div class="row" style="margin-top:14px">
+    <button class="btn line sm" data-act="picktoday">回到今天</button>
+    <button class="btn ghost" data-act="close">取消</button>
+  </div>`;
+}
+
+function openPicker(kind, mk, sel, view) {
+  picker = { kind, mk: mk || mkOf(todayStr()), sel: sel || '', view: view || 'day' };
+  openSheet(pickerHTML());
+}
+
+function applyPick(d) {
+  const k = picker.kind;
+  picker = null;
+  closeSheet();
+  if (k === 'study') {
+    studyDate = d; tab = 'study'; render();
+    toast(fmtCNF(d) + ' ' + WD[parseD(d).getDay()]);
+  } else if (k === 'bill') {
+    billMonth = mkOf(d); billDay = d; tab = 'bill'; render();
+    toast('只看 ' + fmtCNF(d));
+  } else if (k === 'checkin') {
+    ckMonth = mkOf(d); tab = 'checkin'; render();
+    setTimeout(() => daySheet(d), 40);
+  } else if (k === 'ckdate') {
+    ckDate = d; ckMonth = mkOf(d); tab = 'checkin'; render();
+    toast('记录到 ' + fmtCNF(d) + ' ' + WD[parseD(d).getDay()]);
+  } else if (k === 'period') {
+    pMonth = mkOf(d); tab = 'period'; render();
+  }
+}
 
 function render() {
   const map = { checkin: viewCheckin, study: viewStudy, bill: viewBill, period: viewPeriod, more: viewMore };
@@ -613,7 +816,7 @@ function ckRow(e) {
 function viewCheckin() {
   const s = ckStats(ckMonth);
   const isNow = ckMonth === mkOf(todayStr());
-  const r = curRound();
+  const r = activeRound();
   const rdDone = state.elders.filter(e => ckGet(ckMonth, e.id, r.k)).length;
   const rdPct = state.elders.length ? Math.round(rdDone / state.elders.length * 100) : 0;
   const hint = isNow
@@ -665,7 +868,7 @@ function viewCheckin() {
   <div class="card">
     <div class="mnav">
       <button class="arw" data-act="ckm" data-n="-1">‹</button>
-      <div class="m">${mkLabel(ckMonth)}</div>
+      <button class="mbtn" data-act="ckpick">${mkLabel(ckMonth)}<u>▾</u></button>
       <button class="arw" data-act="ckm" data-n="1" ${isNow ? 'disabled' : ''}>›</button>
     </div>
     <div class="row" style="align-items:flex-end">
@@ -676,6 +879,15 @@ function viewCheckin() {
       <div class="tiny" style="text-align:right">${hint}</div>
     </div>
     <div class="pbar"><i style="width:${rdPct}%"></i></div>
+  </div>
+
+  <div class="ckwhen">
+    <div class="db" data-act="ckdate">
+      <span class="lbl">记录到</span>
+      <b>${ckDate === todayStr() ? '今天' : fmtCNF(ckDate)} ${WD[parseD(ckDate).getDay()]}<u>▾</u></b>
+    </div>
+    <button class="tm ${ckTime ? '' : 'none'}" data-act="cktime">${ckTime || '不记时间'}</button>
+    <button class="now" data-act="cknow">此刻</button>
   </div>
 
   <div class="row" style="margin:14px 2px 8px">
@@ -696,7 +908,7 @@ function viewCheckin() {
       </div>`;
     }).join('')}
   </div>
-  <p class="note" style="padding:0 4px">点「月初 / 月中 / 月末」快速打卡，再点一次取消；点姓名可逐项记录洗脸、梳头、翻身、剪指甲、喂水、刮胡子。</p>`;
+  <p class="note" style="padding:0 4px">点「月初 / 月中 / 月末」快速打卡，再点一次取消；点姓名可逐项记录洗脸、梳头、翻身、剪指甲、喂水、刮胡子。上面的「记录到」可以改成任意日期和时刻，补录以前的打卡也能精确到几点几分。</p>`;
 }
 
 /* ---------- 学习 ---------- */
@@ -716,7 +928,7 @@ function studyStatsHTML() {
     <div class="row" style="align-items:flex-end">
       <div>
         <div class="big num">${t}<small>分钟</small></div>
-        <div class="tiny" style="margin-top:2px">${d === todayStr() ? '今日合计' : fmtCN(d) + ' 合计'} · ${dur(t)}</div>
+        <div class="tiny" style="margin-top:2px">${d === todayStr() ? '今日合计' : fmtCNF(d) + ' 合计'} · ${dur(t)}</div>
       </div>
       <div style="text-align:right">
         <div class="tiny">连续 ${streak()} 天</div>
@@ -733,7 +945,7 @@ function studyStatsHTML() {
     <div class="wchart">
       ${week.map(x => {
         const v = stGet(x), tt = stTotal(x);
-        return `<div class="wcol">
+        return `<div class="wcol" data-act="stdjump" data-d="${x}" style="cursor:pointer">
           <div class="wbar">
             ${SMET.map(m => (v[m.k] || 0) > 0 ? `<div class="seg" style="height:${(v[m.k] || 0) / max * 100}%;background:${m.c}"></div>` : '').join('')}
           </div>
@@ -750,7 +962,7 @@ function viewStudy() {
   <div class="card">
     <div class="mnav">
       <button class="arw" data-act="std" data-n="-1">‹</button>
-      <div class="m">${studyDate === todayStr() ? '今天' : fmtCN(studyDate) + ' ' + WD[parseD(studyDate).getDay()]}</div>
+      <button class="mbtn" data-act="stdpick">${studyDate === todayStr() ? '今天' : fmtCNF(studyDate) + ' ' + WD[parseD(studyDate).getDay()]}<u>▾</u></button>
       <button class="arw" data-act="std" data-n="1" ${studyDate >= todayStr() ? 'disabled' : ''}>›</button>
     </div>
     ${SMET.map(m => `
@@ -776,13 +988,15 @@ function viewStudy() {
 
 /* ---------- 记账 ---------- */
 function viewBill() {
-  const list = billsOf(billMonth);
+  const monthList = billsOf(billMonth);
+  const list = billDay ? monthList.filter(b => b.date === billDay) : monthList;
   const total = sumBills(list);
+  const monthTotal = sumBills(monthList);
   const catList = list.filter(b => b.cat === 'cat');
   const catTotal = sumBills(catList);
   const prevTotal = sumBills(billsOf(addMonths(billMonth, -1)));
   let cmp = '';
-  if (prevTotal > 0) {
+  if (!billDay && prevTotal > 0) {
     const d = (total - prevTotal) / prevTotal * 100;
     cmp = `较上月 ${d >= 0 ? '+' : ''}${d.toFixed(0)}%`;
   }
@@ -794,13 +1008,15 @@ function viewBill() {
 
   let listHTML = '';
   if (!dates.length) {
-    listHTML = `<div class="empty">${billFilter === 'cat' ? '本月还没有养猫开支' : '本月还没有记账'}</div>`;
+    listHTML = `<div class="empty">${billFilter === 'cat'
+      ? (billDay ? '这天没有养猫开支' : '本月还没有养猫开支')
+      : (billDay ? '这天还没有记账' : '本月还没有记账')}</div>`;
   } else {
     listHTML = dates.map(d => {
       const items = byDate[d].sort((a, b) => (a.id < b.id ? 1 : -1));
       const sum = sumBills(items);
-      const dl = d === todayStr() ? '今天' : `${fmtCN(d)} ${WD[parseD(d).getDay()]}`;
-      return `<div class="bdate"><span>${dl}</span><span class="num">${money(sum)}</span></div>
+      const dl = d === todayStr() ? '今天' : `${fmtCNF(d)} ${WD[parseD(d).getDay()]}`;
+      return `<div class="bdate" data-act="bday" data-d="${d}" style="cursor:pointer"><span>${dl}</span><span class="num">${money(sum)}</span></div>
         ${items.map(b => {
           const c = CATMAP[b.cat] || CATMAP.other;
           return `<div class="bitem">
@@ -826,13 +1042,13 @@ function viewBill() {
   <div class="card">
     <div class="mnav">
       <button class="arw" data-act="blm" data-n="-1">‹</button>
-      <div class="m">${mkLabel(billMonth)}</div>
+      <button class="mbtn" data-act="blpick">${mkLabel(billMonth)}<u>▾</u></button>
       <button class="arw" data-act="blm" data-n="1" ${billMonth >= mkOf(todayStr()) ? 'disabled' : ''}>›</button>
     </div>
     <div class="row" style="align-items:flex-end">
       <div>
         <div class="big num">${money(total)}</div>
-        <div class="tiny" style="margin-top:2px">共 ${list.length} 笔 ${cmp ? '· ' + cmp : ''}</div>
+        <div class="tiny" style="margin-top:2px">${billDay ? fmtCNF(billDay) + ' · ' + list.length + ' 笔' : '共 ' + list.length + ' 笔'} ${cmp ? '· ' + cmp : ''}</div>
       </div>
       <div style="text-align:right">
         <div class="tiny">养猫</div>
@@ -840,6 +1056,11 @@ function viewBill() {
       </div>
     </div>
   </div>
+
+  ${billDay ? `<div class="daypill">
+      <span>只看 ${fmtCNF(billDay)} ${WD[parseD(billDay).getDay()]}${billDay === todayStr() ? '（今天）' : ''}</span>
+      <button data-act="blall">看整月 · ${money(monthTotal)}</button>
+    </div>` : ''}
 
   <div class="card" style="padding:0;overflow:hidden">
     <button data-act="toggleAdd" style="width:100%;height:50px;display:flex;align-items:center;justify-content:center;gap:6px;font-size:14px;color:${billFormOpen ? 'var(--ink3)' : 'var(--accent)'};font-weight:500">
@@ -943,11 +1164,11 @@ function viewPeriod() {
   for (let i = 0; i < startDow; i++) cells += '<div></div>';
   for (let d = 1; d <= dim; d++) {
     const ds = `${pMonth}-${pad(d)}`;
-    let cls = 'd';
+    let cls = 'd clk';
     if (inPeriod[ds]) cls += ' p';
     else if (pred[ds]) cls += ' pr';
     if (ds === today) cls += ' today';
-    cells += `<div class="${cls}">${d}</div>`;
+    cells += `<div class="${cls}" data-act="pday" data-d="${ds}">${d}</div>`;
   }
 
   let status = '还没有记录';
@@ -972,14 +1193,15 @@ function viewPeriod() {
       ${active
         ? `<button class="btn" data-act="pend" style="background:var(--brick);flex:1">结束本次（今天）</button>`
         : `<button class="btn" data-act="pstart" style="background:var(--brick);flex:1">开始记录（今天）</button>`}
+      <button class="btn line" data-act="paddnew">补录</button>
     </div>
   </div>
 
   <div class="card">
     <div class="mnav">
       <button class="arw" data-act="pm" data-n="-1">‹</button>
-      <div class="m">${mkLabel(pMonth)}</div>
-      <button class="arw" data-act="pm" data-n="1">›</button>
+      <button class="mbtn" data-act="pmpick">${mkLabel(pMonth)}<u>▾</u></button>
+      <button class="arw" data-act="pm" data-n="1" ${pMonth >= mkOf(todayStr()) ? 'disabled' : ''}>›</button>
     </div>
     <div class="cal">
       ${['日', '一', '二', '三', '四', '五', '六'].map(w => `<div class="h">${w}</div>`).join('')}
@@ -1005,7 +1227,7 @@ function viewPeriod() {
       const cyc = idx > 0 ? diffDays(ps.rs[idx - 1].start, r.start) : null;
       return `<div class="prec">
         <div>
-          <div>${fmtCN(r.start)} – ${r.end ? fmtCN(r.end) : '进行中'}</div>
+          <div>${fmtCNF(r.start)} – ${r.end ? fmtCNF(r.end) : '进行中'}</div>
           <div class="tiny" style="margin-top:2px">${len ? '经期 ' + len + ' 天' : '已持续 ' + (diffDays(r.start, today) + 1) + ' 天'}${cyc ? ' · 周期 ' + cyc + ' 天' : ''}</div>
         </div>
         <div style="display:flex;align-items:center">
@@ -1015,7 +1237,7 @@ function viewPeriod() {
       </div>`;
     }).join('')}
   </div>
-  <p class="note" style="padding:0 4px">预测基于你的平均周期自动推算，仅作参考。数据只保存在本机。</p>`;
+  <p class="note" style="padding:0 4px">点日历上的任意一天可以直接补录那天的记录；点月份标题可快速跳到往年月份。预测基于你的平均周期自动推算，仅作参考。数据只保存在本机。</p>`;
 }
 
 /* ---------- 我的 ---------- */
@@ -1147,6 +1369,15 @@ function detailHTML() {
   <div class="chips" style="margin-bottom:16px">
     ${ITEMS.map(it => `<button class="chip ${items[it.k] ? 'on' : ''}" data-act="ditem" data-k="${it.k}">${it.n}</button>`).join('')}
   </div>
+  ${v ? `
+  <div class="field">
+    <label>这条记录的时间（可改）</label>
+    <div class="row" style="gap:8px">
+      <input class="inp sm" type="date" id="dDate" value="${v.d}"
+        min="${detail.mk}-01" max="${detail.mk}-${pad(daysInMonth(detail.mk))}" style="flex:1.5">
+      <input class="inp sm" type="time" id="dTime" value="${v.t || ''}" style="flex:1">
+    </div>
+  </div>` : ''}
   <div class="field">
     <label>备注</label>
     <input class="inp sm" id="dNote" value="${esc((v && v.note) || '')}" placeholder="选填">
@@ -1158,11 +1389,95 @@ function detailHTML() {
   <p class="note" style="margin-top:12px">勾选即保存。未勾选任何项时，也可直接点上面的轮次格子快速打卡。</p>`;
 }
 function openDetail(eid) {
-  detail = { eid, mk: ckMonth, r: curRound().k };
+  detail = { eid, mk: ckMonth, r: activeRound().k };
   openSheet(detailHTML());
 }
 function renderDetail() {
   if (detail) $('#sheetBody').innerHTML = detailHTML();
+}
+
+/* 打卡时间：可以直接选几点几分，也可以不记时间 */
+function ckTimeSheet() {
+  const quick = ['07:30', '08:00', '09:00', '10:00', '14:00', '15:30', '16:00', '20:00'];
+  openSheet(`
+    <div class="sheet-h"><h3>打卡时间</h3><button class="x" data-act="close">关闭</button></div>
+    <div class="field">
+      <label>具体时间</label>
+      <input class="inp" type="time" id="ckTimeInput" value="${ckTime || ''}">
+    </div>
+    <div class="chips" style="margin-bottom:16px">
+      ${quick.map(t => `<button class="chip ${ckTime === t ? 'on' : ''}" data-act="cktq" data-t="${t}">${t}</button>`).join('')}
+      <button class="chip" data-act="cktq" data-t="__now">现在</button>
+      <button class="chip" data-act="cktq" data-t="">不记时间</button>
+    </div>
+    <button class="btn block" data-act="cktsave">确定</button>
+    <p class="note" style="margin-top:12px">这里只影响「接下来新打卡」的记录时间，已经记好的可以在老人姓名里单独改。</p>`);
+}
+
+/* 补录经期：可指定任意起止日期，从 2025 年往前的历史都能补 */
+function periodAddSheet(d) {
+  pDraft = { start: d || '', end: '' };
+  openSheet(periodAddHTML());
+}
+function periodAddHTML() {
+  const all = state.periods.filter(r => r.start).slice().sort((a, b) => (a.start < b.start ? -1 : 1));
+  const earliest = all.length ? all[0].start : '';
+  return `
+  <div class="sheet-h"><h3>补录经期</h3><button class="x" data-act="close">关闭</button></div>
+  <div class="field"><label>开始日期</label><input class="inp" type="date" id="pNewStart" value="${pDraft.start}" max="${todayStr()}"></div>
+  <div class="field"><label>结束日期（留空表示还没结束）</label><input class="inp" type="date" id="pNewEnd" value="${pDraft.end}" max="${todayStr()}"></div>
+  <button class="btn block" data-act="padd" style="background:var(--brick)">保存这条</button>
+  <div class="row" style="margin-top:12px">
+    <span class="tiny" id="pAddCount">已记录 ${state.periods.length} 条${earliest ? '，最早一条 ' + fmtCNF(earliest) : ''}</span>
+    <button class="btn ghost" data-act="close" style="font-size:13px">完成</button>
+  </div>
+  <p class="note" style="margin-top:10px">保存后会停在这里，可以直接接着补下一条。点日历上的某一天也能打开这里，开始日期会自动填好。</p>`;
+}
+
+/* 某一天都有谁打了卡 */
+function dayRows(d) {
+  const mk = mkOf(d);
+  const m = state.checkins[mk] || {};
+  const out = [];
+  state.elders.forEach(e => {
+    ROUNDS.forEach(rd => {
+      const v = m[e.id] && m[e.id][rd.k];
+      if (!v) return;
+      const dd = v && typeof v === 'object' ? v.d : v;
+      if (dd !== d) return;
+      out.push({ e, rd, v: typeof v === 'object' ? v : { d: dd, t: '', items: {} } });
+    });
+  });
+  return out;
+}
+
+function daySheet(d) {
+  const rows = dayRows(d);
+  const byFloor = {};
+  rows.forEach(r => {
+    const f = r.e.floor || '未分组';
+    (byFloor[f] = byFloor[f] || []).push(r);
+  });
+  const totalItems = rows.reduce((a, r) => a + Object.keys(r.v.items || {}).length, 0);
+  const detail = Object.keys(byFloor).length
+    ? Object.entries(byFloor).map(([f, list]) => `
+      <div class="sec" style="margin:14px 0 6px">${esc(f)} · ${list.length} 人次</div>
+      ${list.map(r => `<div class="prec">
+        <div>
+          <div>${esc(r.e.name)} <span class="tiny">· ${r.rd.n}${r.v.t ? ' · ' + r.v.t : ''}</span></div>
+          <div class="tiny" style="margin-top:2px">${Object.keys(r.v.items || {}).length
+            ? ITEMS.filter(it => r.v.items[it.k]).map(it => it.n).join(' / ')
+            : '未记录具体项目'}</div>
+        </div>
+        <button class="btn ghost" data-act="dopen" data-eid="${r.e.id}" data-r="${r.rd.k}" data-d="${d}" style="font-size:12px">明细</button>
+      </div>`).join('')}`).join('')
+    : '<div class="empty">这天没有打卡记录</div>';
+
+  openSheet(`
+    <div class="sheet-h"><h3>${fmtCNF(d)} ${WD[parseD(d).getDay()]}</h3><button class="x" data-act="close">完成</button></div>
+    <div class="kv"><span>打卡人次</span><span class="num">${rows.length}</span></div>
+    <div class="kv"><span>记录项目数</span><span class="num">${totalItems}</span></div>
+    ${detail}`);
 }
 
 function periodEditSheet(id) {
@@ -1190,7 +1505,75 @@ document.addEventListener('click', e => {
     toast(dt ? '已取消' : `已记录 ${e2 ? e2.name : ''} · ${fmtMD(todayStr())}`);
     return;
   }
-  if (a === 'ckm') { ckMonth = addMonths(ckMonth, Number(el.dataset.n)); render(); return; }
+  if (a === 'ckm') {
+    ckMonth = addMonths(ckMonth, Number(el.dataset.n));
+    // 「记录到」跟随月份，避免记录日期跑到别的月份
+    const day = Math.min(Number((ckDate || todayStr()).slice(8, 10)) || 1, daysInMonth(ckMonth));
+    ckDate = `${ckMonth}-${pad(day)}`;
+    render();
+    return;
+  }
+  if (a === 'ckpick') { openPicker('checkin', ckMonth, ''); return; }
+  if (a === 'ckdate') { openPicker('ckdate', mkOf(ckDate), ckDate); return; }
+  if (a === 'cktime') { ckTimeSheet(); return; }
+  if (a === 'cktq') {
+    const t = el.dataset.t;
+    const inp = $('#ckTimeInput');
+    if (inp) inp.value = t === '__now' ? nowHM() : t;
+    $$('#sheetBody .chip').forEach(c => c.classList.remove('on'));
+    el.classList.add('on');
+    return;
+  }
+  if (a === 'cktsave') {
+    const inp = $('#ckTimeInput');
+    ckTime = (inp && inp.value) || '';
+    closeSheet(); render();
+    toast(ckTime ? '记录时间 ' + ckTime : '不记时间，只记日期');
+    return;
+  }
+  if (a === 'cknow') {
+    ckDate = todayStr(); ckTime = nowHM(); ckMonth = mkOf(ckDate);
+    render();
+    toast('已回到此刻 ' + ckTime);
+    return;
+  }
+
+  /* ---- 通用日历选择器 ---- */
+  if (a === 'pickm') {
+    picker.mk = addMonths(picker.mk, Number(el.dataset.n));
+    $('#sheetBody').innerHTML = pickerHTML();
+    return;
+  }
+  if (a === 'pickmy') {
+    const y = Number(picker.mk.slice(0, 4)) + Number(el.dataset.n);
+    const nowY = Number(todayStr().slice(0, 4));
+    if (y > nowY || y < 2000) return;
+    picker.mk = `${y}-${picker.mk.slice(5, 7)}`;
+    $('#sheetBody').innerHTML = pickerHTML();
+    return;
+  }
+  if (a === 'pickmon') {
+    const y = picker.mk.slice(0, 4);
+    picker.mk = `${y}-${pad(Number(el.dataset.m))}`;
+    if (picker.kind === 'period') { applyPick(picker.mk + '-01'); return; }
+    picker.view = 'day';
+    $('#sheetBody').innerHTML = pickerHTML();
+    return;
+  }
+  if (a === 'pickview') {
+    picker.view = picker.view === 'month' ? 'day' : 'month';
+    $('#sheetBody').innerHTML = pickerHTML();
+    return;
+  }
+  if (a === 'pickd') { applyPick(el.dataset.d); return; }
+  if (a === 'picktoday') { applyPick(todayStr()); return; }
+
+  if (a === 'dopen') {
+    const dd = el.dataset.d, eid = el.dataset.eid, rk = el.dataset.r;
+    closeSheet();
+    setTimeout(() => { detail = { eid, mk: mkOf(dd), r: rk }; openSheet(detailHTML()); }, 40);
+    return;
+  }
   if (a === 'fold') {
     const f = el.dataset.floor;
     const cur = ckOpen[f] !== undefined ? ckOpen[f] : state.elders.length <= 24;
@@ -1201,10 +1584,10 @@ document.addEventListener('click', e => {
   if (a === 'ckfloor') { ckFloor = el.dataset.f; render(); return; }
   if (a === 'bulk') {
     const f = el.dataset.floor;
-    const r = curRound();
+    const r = activeRound();
     const list = state.elders.filter(x => (x.floor || '未分组') === f && !ckGet(ckMonth, x.id, r.k));
     if (!list.length) { toast('本层本轮都已打卡'); return; }
-    if (!confirm(`把「${f}」${list.length} 位老人标记为「${mkLabel(ckMonth)} · ${r.n}」已打卡？`)) return;
+    if (!confirm(`把「${f}」${list.length} 位老人标记为「${mkLabel(ckMonth)} · ${r.n}」已打卡？\n记录时间：${fmtCNF(ckDate)} ${ckTime}`)) return;
     list.forEach(x => ckEnsure(ckMonth, x.id, r.k));
     save(true); render();
     toast(`已记录 ${list.length} 人`);
@@ -1214,10 +1597,11 @@ document.addEventListener('click', e => {
   if (a === 'dround') { detail.r = el.dataset.r; renderDetail(); return; }
   if (a === 'ditem') {
     const k = el.dataset.k;
+    const had = !!ckGet(detail.mk, detail.eid, detail.r);
     const v = ckEnsure(detail.mk, detail.eid, detail.r);
     if (v.items[k]) delete v.items[k];
     else v.items[k] = 1;
-    if (!v.d) v.d = todayStr();
+    if (!v.d) v.d = ckDate || todayStr();
     save(true);
     const n = Object.keys(v.items).length;
     el.classList.toggle('on', !!v.items[k]);
@@ -1229,6 +1613,7 @@ document.addEventListener('click', e => {
       tab.textContent = rn.n + (n ? ' · ' + n : '');
     }
     render();
+    if (!had) renderDetail();  // 首次勾选后把「记录时间」补出来
     return;
   }
   if (a === 'dclear') {
@@ -1262,6 +1647,8 @@ document.addEventListener('click', e => {
     render();
     return;
   }
+  if (a === 'stdpick') { openPicker('study', mkOf(studyDate), studyDate); return; }
+  if (a === 'stdjump') { studyDate = el.dataset.d; render(); return; }
   if (a === 'stadd') {
     const k = el.dataset.k, n = Number(el.dataset.n);
     const cur = stGet(studyDate)[k] || 0;
@@ -1272,8 +1659,17 @@ document.addEventListener('click', e => {
     return;
   }
 
-  if (a === 'blm') { billMonth = addMonths(billMonth, Number(el.dataset.n)); render(); return; }
-  if (a === 'toggleAdd') { billFormOpen = !billFormOpen; render(); if (billFormOpen) setTimeout(() => { const i = $('#amtInput'); if (i) i.focus(); }, 100); return; }
+  if (a === 'blm') { billMonth = addMonths(billMonth, Number(el.dataset.n)); billDay = ''; render(); return; }
+  if (a === 'blpick') { openPicker('bill', billMonth, billDay); return; }
+  if (a === 'blall') { billDay = ''; render(); return; }
+  if (a === 'bday') { billDay = el.dataset.d; render(); return; }
+  if (a === 'toggleAdd') {
+    billFormOpen = !billFormOpen;
+    if (billFormOpen) billDraft.date = billDay || todayStr();
+    render();
+    if (billFormOpen) setTimeout(() => { const i = $('#amtInput'); if (i) i.focus(); }, 100);
+    return;
+  }
   if (a === 'pickcat') { billCat = el.dataset.k; render(); return; }
   if (a === 'picksub') { billSub = el.dataset.k; render(); return; }
   if (a === 'bfilter') { billFilter = el.dataset.k; render(); return; }
@@ -1289,6 +1685,7 @@ document.addEventListener('click', e => {
     });
     save(true);
     billMonth = date.slice(0, 7);
+    billDay = '';
     billFormOpen = false;
     billDraft = { amount: '', note: '', date: todayStr() };
     render();
@@ -1320,6 +1717,32 @@ document.addEventListener('click', e => {
     return;
   }
   if (a === 'pm') { pMonth = addMonths(pMonth, Number(el.dataset.n)); render(); return; }
+  if (a === 'pmpick') { openPicker('period', pMonth, '', 'month'); return; }
+  if (a === 'pday') { periodAddSheet(el.dataset.d); return; }
+  if (a === 'paddnew') { periodAddSheet(''); return; }
+  if (a === 'padd') {
+    const s0 = $('#pNewStart').value, e0 = $('#pNewEnd').value;
+    if (!s0) { toast('请选择开始日期'); return; }
+    if (e0 && e0 < s0) { toast('结束日期不能早于开始'); return; }
+    const e1 = e0 || todayStr();
+    const clash = state.periods.find(r => {
+      const rs = r.start, re = r.end || todayStr();
+      return !(e1 < rs || s0 > re);
+    });
+    if (clash && !confirm(`和已有记录（${fmtCNF(clash.start)} – ${clash.end ? fmtCNF(clash.end) : '进行中'}）日期有重叠，仍要保存吗？`)) return;
+    state.periods.push({ id: uid(), start: s0, end: e0 || '' });
+    save(true);
+    pMonth = mkOf(s0);
+    render();
+    // 保持弹层打开，方便接着补下一条
+    const sInp = $('#pNewStart'), eInp = $('#pNewEnd');
+    if (sInp) sInp.value = '';
+    if (eInp) eInp.value = '';
+    const cnt = $('#pAddCount');
+    if (cnt) cnt.textContent = `已记录 ${state.periods.length} 条 · 继续补下一条`;
+    toast(`已补录 ${fmtCNF(s0)}`);
+    return;
+  }
   if (a === 'pedit') { periodEditSheet(el.dataset.id); return; }
   if (a === 'psave') {
     const r = state.periods.find(x => x.id === el.dataset.id);
@@ -1404,6 +1827,14 @@ document.addEventListener('keydown', e => {
 
 document.addEventListener('change', e => {
   const el = e.target;
+  if ((el.id === 'dDate' || el.id === 'dTime') && detail) {
+    const v = ckGet(detail.mk, detail.eid, detail.r);
+    if (!v) return;
+    if (el.id === 'dDate') { if (!el.value) return; v.d = el.value; }
+    else v.t = el.value;
+    save(); render();
+    return;
+  }
   if (el.dataset && el.dataset.act === 'stin') {
     stSet(studyDate, el.dataset.k, el.value);
     el.value = stGet(studyDate)[el.dataset.k] || 0;
@@ -1425,6 +1856,16 @@ document.addEventListener('change', e => {
     el.value = '';
   }
 });
+
+/* ==================== 固定缩放（防止误触放大） ==================== */
+// iOS Safari 会忽略 user-scalable=no，这里手动拦掉双指缩放
+['gesturestart', 'gesturechange', 'gestureend'].forEach(t => {
+  document.addEventListener(t, e => e.preventDefault(), { passive: false });
+});
+// 双指触摸时阻止页面缩放（安卓 WebView 兜底）
+document.addEventListener('touchmove', e => {
+  if (e.touches && e.touches.length > 1) e.preventDefault();
+}, { passive: false });
 
 /* ==================== 启动 ==================== */
 mergeSeed();
