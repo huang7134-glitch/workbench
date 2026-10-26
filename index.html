@@ -281,6 +281,22 @@ ul{list-style:none}
 .ckwhen .tm.none{background:#fff;color:var(--ink3);border:1px dashed var(--line);font-weight:400;font-size:12.5px}
 .ckwhen .now{font-size:12px;color:var(--ink2);padding:7px 9px;border-radius:9px;border:1px solid var(--line);background:#fff}
 .ckwhen .db:active,.ckwhen .tm:active,.ckwhen .now:active{opacity:.65}
+.exprow{display:flex;align-items:center;gap:10px;margin:12px 2px 0}
+.exprow .btn{flex:1}
+.exprow .tiny{flex-shrink:0;color:var(--ink3)}
+.ov{width:100%;border-collapse:collapse;font-size:12.5px;margin:2px 0 18px}
+.ov th{font-size:11px;color:var(--ink3);font-weight:500;padding:7px 4px 4px;text-align:center}
+.ov th[data-act]{cursor:pointer}
+.ov th.cur{color:var(--accent);font-weight:600}
+.ov th:first-child{text-align:left;padding-left:2px;width:70px}
+.ov .ovd td{padding:0 2px 9px;border-bottom:1px solid var(--line);font-size:10.5px;line-height:1.4;color:var(--ink3)}
+.ov .ovd td b{display:block;font-weight:600;font-size:11.5px;color:var(--ink2)}
+.ov .ovd td i{display:block;font-style:normal;font-size:10px}
+.ov .ovd td.none b{font-weight:400;font-size:10.5px;color:var(--ink3)}
+.ov td{padding:7px 4px;text-align:center;color:var(--ink3);border-bottom:1px solid var(--line2)}
+.ov td:first-child{text-align:left;padding-left:2px;color:var(--ink2)}
+.ov td.on{color:var(--accent);font-weight:600}
+.ov tr:last-child td{border-bottom:0}
 .prec{display:flex;align-items:center;justify-content:space-between;padding:11px 0;border-bottom:1px solid var(--line2);font-size:13.5px}
 .prec:last-child{border-bottom:0}
 .prec .del{font-size:12px;color:var(--brick);padding-left:12px}
@@ -890,6 +906,11 @@ function viewCheckin() {
     <button class="now" data-act="cknow">此刻</button>
   </div>
 
+  <div class="exprow">
+    <button class="btn sm line" data-act="ckxlsx">导出 ${mkLabel(ckMonth)} Excel</button>
+    <span class="tiny">${s.done ? s.done + ' 条记录' : '暂无记录'}</span>
+  </div>
+
   <div class="row" style="margin:14px 2px 8px">
     <div class="sec" style="margin:0">名单 · ${state.elders.length} 人</div>
     <button class="btn ghost" data-act="roster" style="font-size:13px">管理</button>
@@ -1273,7 +1294,8 @@ function viewMore() {
     <div class="sec" style="margin:0 0 10px">数据</div>
     <div class="kv"><span>本地存储</span><span class="num">${size}</span></div>
     <div class="kv"><span>记录范围</span><span class="num">${Object.keys(state.study).length} 天学习 · ${state.bills.length} 笔账</span></div>
-    <div class="chips" style="margin-top:14px">
+    <button class="btn sm line block" data-act="ckxlsx" style="margin-top:14px">导出 ${mkLabel(ckMonth)} 打卡 Excel</button>
+    <div class="chips" style="margin-top:8px">
       <button class="btn sm line" data-act="export" style="flex:1">导出备份</button>
       <button class="btn sm line" data-act="import" style="flex:1">导入备份</button>
     </div>
@@ -1349,6 +1371,11 @@ function addEldersFromInput() {
 }
 
 /* ---------- 打卡明细（6 个护理项） ---------- */
+/* 三次一览里那一行：具体日期 + 时刻 */
+function ovDateHTML(v) {
+  if (!v) return '<b class="none">未打卡</b>';
+  return `<b>${esc(v.d ? fmtCNF(v.d) : '—')}</b>${v.t ? `<i>${esc(v.t)}</i>` : ''}`;
+}
 function detailHTML() {
   const e = state.elders.find(x => x.id === detail.eid);
   if (!e) return `<div class="sheet-h"><h3>未找到</h3><button class="x" data-act="close">关闭</button></div>`;
@@ -1358,6 +1385,21 @@ function detailHTML() {
   return `
   <div class="sheet-h"><h3>${esc(e.name)}</h3><button class="x" data-act="close">关闭</button></div>
   <div class="tiny" style="margin:-8px 0 14px">${esc(e.floor || '未分组')} · ${mkLabel(detail.mk)}</div>
+  <table class="ov">
+    <tr>
+      <th>三次一览</th>
+      ${ROUNDS.map(rd => `<th class="${detail.r === rd.k ? 'cur' : ''}" data-act="dround" data-r="${rd.k}">${rd.n}</th>`).join('')}
+    </tr>
+    <tr class="ovd">
+      <td></td>
+      ${ROUNDS.map(rd => `<td id="ovd_${rd.k}">${ovDateHTML(ckGet(detail.mk, detail.eid, rd.k))}</td>`).join('')}
+    </tr>
+    ${ITEMS.map(it => `<tr><td>${it.n}</td>${ROUNDS.map(rd => {
+      const vv = ckGet(detail.mk, detail.eid, rd.k);
+      const on = !!(vv && vv.items && vv.items[it.k]);
+      return `<td id="ov_${rd.k}_${it.k}" class="${on ? 'on' : ''}">${on ? '✓' : (vv ? '·' : '—')}</td>`;
+    }).join('')}</tr>`).join('')}
+  </table>
   <div class="chips" style="margin-bottom:16px">
     ${ROUNDS.map(rd => {
       const vv = ckGet(detail.mk, detail.eid, rd.k);
@@ -1607,10 +1649,16 @@ document.addEventListener('click', e => {
     el.classList.toggle('on', !!v.items[k]);
     const c = $('#dCount');
     if (c) c.textContent = n ? `· 已记 ${n} / 6` : '· 未记录';
-    const tab = $(`[data-act="dround"][data-r="${detail.r}"]`);
+    const tab = $(`.chip[data-act="dround"][data-r="${detail.r}"]`);
     if (tab) {
       const rn = ROUNDS.find(x => x.k === detail.r);
       tab.textContent = rn.n + (n ? ' · ' + n : '');
+    }
+    const ovc = $(`#ov_${detail.r}_${k}`);
+    if (ovc) {
+      const on = !!v.items[k];
+      ovc.className = on ? 'on' : '';
+      ovc.textContent = on ? '✓' : '·';
     }
     render();
     if (!had) renderDetail();  // 首次勾选后把「记录时间」补出来
@@ -1763,6 +1811,7 @@ document.addEventListener('click', e => {
     return;
   }
 
+  if (a === 'ckxlsx') { exportCheckinXlsx(ckMonth); return; }
   if (a === 'export') {
     const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
@@ -1833,6 +1882,8 @@ document.addEventListener('change', e => {
     if (el.id === 'dDate') { if (!el.value) return; v.d = el.value; }
     else v.t = el.value;
     save(); render();
+    const ovd = $(`#ovd_${detail.r}`);
+    if (ovd) ovd.innerHTML = ovDateHTML(v);
     return;
   }
   if (el.dataset && el.dataset.act === 'stin') {
@@ -1856,6 +1907,299 @@ document.addEventListener('change', e => {
     el.value = '';
   }
 });
+
+/* ==================== Excel 导出（手写 xlsx，无任何外部依赖） ==================== */
+/* 思路：xlsx 就是一个 zip 包，里面装几段固定格式的 XML。
+   zip 用 store（不压缩）方式打包，只需自己算 CRC32，不需要 deflate 库。 */
+
+/* 自己实现 UTF-8 编码，避免依赖 TextEncoder（老 WebView / 测试环境可能没有） */
+function xlUtf8(str) {
+  const out = [];
+  for (let i = 0; i < str.length; i++) {
+    const c = str.charCodeAt(i);
+    if (c < 0x80) out.push(c);
+    else if (c < 0x800) out.push(0xC0 | (c >> 6), 0x80 | (c & 63));
+    else if (c >= 0xD800 && c <= 0xDBFF && i + 1 < str.length) {
+      const c2 = str.charCodeAt(++i);
+      const cp = 0x10000 + ((c - 0xD800) << 10) + (c2 - 0xDC00);
+      out.push(0xF0 | (cp >> 18), 0x80 | ((cp >> 12) & 63), 0x80 | ((cp >> 6) & 63), 0x80 | (cp & 63));
+    } else out.push(0xE0 | (c >> 12), 0x80 | ((c >> 6) & 63), 0x80 | (c & 63));
+  }
+  return new Uint8Array(out);
+}
+const XL_CRC_T = (() => {
+  const t = new Uint32Array(256);
+  for (let i = 0; i < 256; i++) {
+    let c = i;
+    for (let k = 0; k < 8; k++) c = c & 1 ? 0xEDB88320 ^ (c >>> 1) : c >>> 1;
+    t[i] = c >>> 0;
+  }
+  return t;
+})();
+function xlCrc32(u8) {
+  let c = 0xFFFFFFFF;
+  for (let i = 0; i < u8.length; i++) c = XL_CRC_T[(c ^ u8[i]) & 0xFF] ^ (c >>> 8);
+  return (c ^ 0xFFFFFFFF) >>> 0;
+}
+function xlZip(files) {
+  const now = new Date();
+  const dt = ((now.getHours() << 11) | (now.getMinutes() << 5) | (now.getSeconds() >> 1)) & 0xFFFF;
+  const dd = (((now.getFullYear() - 1980) << 9) | ((now.getMonth() + 1) << 5) | now.getDate()) & 0xFFFF;
+  const parts = [], cds = [];
+  let off = 0;
+  files.forEach(f => {
+    const name = xlUtf8(f.name);
+    const data = typeof f.data === 'string' ? xlUtf8(f.data) : f.data;
+    const crc = xlCrc32(data);
+    const lh = new Uint8Array(30 + name.length);
+    const a = new DataView(lh.buffer);
+    a.setUint32(0, 0x04034b50, true);
+    a.setUint16(4, 20, true);
+    a.setUint16(6, 0x0800, true);
+    a.setUint16(8, 0, true);
+    a.setUint16(10, dt, true);
+    a.setUint16(12, dd, true);
+    a.setUint32(14, crc, true);
+    a.setUint32(18, data.length, true);
+    a.setUint32(22, data.length, true);
+    a.setUint16(26, name.length, true);
+    lh.set(name, 30);
+    parts.push(lh, data);
+    const cd = new Uint8Array(46 + name.length);
+    const b = new DataView(cd.buffer);
+    b.setUint32(0, 0x02014b50, true);
+    b.setUint16(4, 20, true);
+    b.setUint16(6, 20, true);
+    b.setUint16(8, 0x0800, true);
+    b.setUint16(10, 0, true);
+    b.setUint16(12, dt, true);
+    b.setUint16(14, dd, true);
+    b.setUint32(16, crc, true);
+    b.setUint32(20, data.length, true);
+    b.setUint32(24, data.length, true);
+    b.setUint16(28, name.length, true);
+    b.setUint32(42, off, true);
+    cd.set(name, 46);
+    cds.push(cd);
+    off += lh.length + data.length;
+  });
+  const cdSize = cds.reduce((s, c) => s + c.length, 0);
+  const end = new Uint8Array(22);
+  const e = new DataView(end.buffer);
+  e.setUint32(0, 0x06054b50, true);
+  e.setUint16(8, files.length, true);
+  e.setUint16(10, files.length, true);
+  e.setUint32(12, cdSize, true);
+  e.setUint32(16, off, true);
+  return new Blob([...parts, ...cds, end], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+}
+function xlColName(n) {
+  let s = '';
+  while (n > 0) { const m = (n - 1) % 26; s = String.fromCharCode(65 + m) + s; n = Math.floor((n - 1) / 26); }
+  return s;
+}
+const xlEsc = s => String(s == null ? '' : s)
+  .replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F]/g, '')
+  .replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&apos;' }[c]));
+
+/* 单元格样式索引：0 默认 / 1 表头 / 2 大标题 / 3 灰字 / 4 居中框 / 5 左对齐框 / 6 绿底框 / 7 加粗 */
+const XL_STYLES = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><fonts count="4"><font><sz val="11"/><color rgb="FF2B2B28"/><name val="等线"/></font><font><b/><sz val="11"/><color rgb="FF2B2B28"/><name val="等线"/></font><font><b/><sz val="15"/><color rgb="FF2B2B28"/><name val="等线"/></font><font><sz val="10"/><color rgb="FF8A8A80"/><name val="等线"/></font></fonts><fills count="4"><fill><patternFill patternType="none"/></fill><fill><patternFill patternType="gray125"/></fill><fill><patternFill patternType="solid"><fgColor rgb="FFF0F0E6"/><bgColor indexed="64"/></patternFill></fill><fill><patternFill patternType="solid"><fgColor rgb="FFEAF2EA"/><bgColor indexed="64"/></patternFill></fill></fills><borders count="2"><border><left/><right/><top/><bottom/><diagonal/></border><border><left style="thin"><color rgb="FFDCDCD2"/></left><right style="thin"><color rgb="FFDCDCD2"/></right><top style="thin"><color rgb="FFDCDCD2"/></top><bottom style="thin"><color rgb="FFDCDCD2"/></bottom><diagonal/></border></borders><cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs><cellXfs count="9"><xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/><xf numFmtId="0" fontId="1" fillId="2" borderId="1" xfId="0" applyFont="1" applyFill="1" applyBorder="1" applyAlignment="1"><alignment horizontal="center" vertical="center" wrapText="1"/></xf><xf numFmtId="0" fontId="2" fillId="0" borderId="0" xfId="0" applyFont="1"/><xf numFmtId="0" fontId="3" fillId="0" borderId="0" xfId="0" applyFont="1"/><xf numFmtId="0" fontId="0" fillId="0" borderId="1" xfId="0" applyBorder="1" applyAlignment="1"><alignment horizontal="center" vertical="center"/></xf><xf numFmtId="0" fontId="0" fillId="0" borderId="1" xfId="0" applyBorder="1" applyAlignment="1"><alignment horizontal="left" vertical="center"/></xf><xf numFmtId="0" fontId="0" fillId="3" borderId="1" xfId="0" applyFill="1" applyBorder="1" applyAlignment="1"><alignment horizontal="center" vertical="center"/></xf><xf numFmtId="0" fontId="1" fillId="0" borderId="0" xfId="0" applyFont="1"/><xf numFmtId="0" fontId="3" fillId="0" borderId="1" xfId="0" applyFont="1" applyBorder="1" applyAlignment="1"><alignment horizontal="center" vertical="center"/></xf></cellXfs><cellStyles count="1"><cellStyle name="Normal" xfId="0" builtinId="0"/></cellStyles></styleSheet>`;
+
+function xlCellXml(v, s, ref) {
+  const st = s ? ` s="${s}"` : '';
+  if (v === null || v === undefined || v === '') return `<c r="${ref}"${st}/>`;
+  if (typeof v === 'number' && isFinite(v)) return `<c r="${ref}"${st}><v>${v}</v></c>`;
+  return `<c r="${ref}"${st} t="inlineStr"><is><t xml:space="preserve">${xlEsc(v)}</t></is></c>`;
+}
+function xlSheetXML(sh) {
+  const rows = sh.rows || [];
+  const defS = sh.defStyle || 0;
+  let maxC = 1;
+  rows.forEach(r => { if (r && r.length > maxC) maxC = r.length; });
+  (sh.merges || []).forEach(m => {
+    const last = (m.split(':')[1] || '').replace(/\d+/g, '');
+    let n = 0;
+    for (let i = 0; i < last.length; i++) n = n * 26 + (last.charCodeAt(i) - 64);
+    if (n > maxC) maxC = n;
+  });
+  let sd = '';
+  rows.forEach((r, i) => {
+    if (!r || !r.length) return;
+    const rn = i + 1;
+    let cells = '';
+    r.forEach((cell, j) => {
+      let v = cell, s = defS;
+      if (cell && typeof cell === 'object') { v = cell.v; s = cell.s === undefined ? defS : cell.s; }
+      cells += xlCellXml(v, s, xlColName(j + 1) + rn);
+    });
+    if (!cells) return;
+    const h = sh.rowH && sh.rowH[rn];
+    sd += `<row r="${rn}"${h ? ` ht="${h}" customHeight="1"` : ''}>${cells}</row>`;
+  });
+  const fz = sh.freeze || 0;
+  const pane = fz
+    ? `<pane ySplit="${fz}" topLeftCell="A${fz + 1}" activePane="bottomLeft" state="frozen"/><selection pane="bottomLeft" activeCell="A${fz + 1}" sqref="A${fz + 1}"/>`
+    : '';
+  const cols = (sh.cols || []).length
+    ? `<cols>${sh.cols.map((w, i) => `<col min="${i + 1}" max="${i + 1}" width="${w}" customWidth="1"/>`).join('')}</cols>`
+    : '';
+  const merges = (sh.merges || []).length
+    ? `<mergeCells count="${sh.merges.length}">${sh.merges.map(m => `<mergeCell ref="${m}"/>`).join('')}</mergeCells>`
+    : '';
+  return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><dimension ref="A1:${xlColName(maxC)}${Math.max(1, rows.length)}"/><sheetViews><sheetView showGridLines="0" workbookViewId="0">${pane}</sheetView></sheetViews><sheetFormatPr defaultRowHeight="18"/>${cols}<sheetData>${sd}</sheetData>${merges}<pageMargins left="0.4" right="0.4" top="0.5" bottom="0.5" header="0.3" footer="0.3"/></worksheet>`;
+}
+function xlWorkbook(sheets) {
+  const n = sheets.length;
+  const ctSheets = sheets.map((s, i) => `<Override PartName="/xl/worksheets/sheet${i + 1}.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/>`).join('');
+  const relSheets = sheets.map((s, i) => `<Relationship Id="rId${i + 1}" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet${i + 1}.xml"/>`).join('');
+  const files = [
+    {
+      name: '[Content_Types].xml', data: `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/>${ctSheets}<Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/></Types>`
+    },
+    {
+      name: '_rels/.rels', data: `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/></Relationships>`
+    },
+    {
+      name: 'xl/workbook.xml', data: `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><sheets>${sheets.map((s, i) => `<sheet name="${xlEsc(s.name)}" sheetId="${i + 1}" r:id="rId${i + 1}"/>`).join('')}</sheets></workbook>`
+    },
+    {
+      name: 'xl/_rels/workbook.xml.rels', data: `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">${relSheets}<Relationship Id="rId${n + 1}" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/></Relationships>`
+    },
+    { name: 'xl/styles.xml', data: XL_STYLES }
+  ];
+  sheets.forEach((s, i) => files.push({ name: `xl/worksheets/sheet${i + 1}.xml`, data: xlSheetXML(s) }));
+  return xlZip(files);
+}
+
+/* ---- 把某个月的打卡数据整理成 3 张表 ---- */
+const H = v => ({ v, s: 1 });
+const CB = v => ({ v, s: 4 });
+const CL = v => ({ v, s: 5 });
+const OK = v => ({ v, s: 6 });
+
+function checkinXlsxSheets(mk) {
+  const gs = floorGroups();
+  const dim = daysInMonth(mk);
+  const now = new Date();
+  const at = `${ymd(now)} ${pad(now.getHours())}:${pad(now.getMinutes())}`;
+  const S1 = [], S2 = [];
+  const tot = { ppl: 0, r: [0, 0, 0], full: 0, items: 0 };
+
+  /* —— 表1 汇总 —— */
+  S1.push([{ v: `${mkLabel(mk)} 护理打卡汇总`, s: 2 }]);
+  S1.push([{ v: `统计区间 ${mk}-01 ~ ${mk}-${pad(dim)}　导出时间 ${at}`, s: 3 }]);
+  S1.push([]);
+  S1.push([H('楼层'), H('人数'), H('月初已打'), H('月中已打'), H('月末已打'), H('三项全打'), H('打卡项次'), H('完成率')]);
+  gs.forEach(g => {
+    const cnt = [0, 0, 0];
+    let full = 0, items = 0;
+    g.list.forEach(e => {
+      let rounds = 0;
+      ROUNDS.forEach((r, i) => {
+        const v = ckGet(mk, e.id, r.k);
+        if (v) { cnt[i]++; rounds++; items += Object.keys(v.items || {}).length; }
+      });
+      if (rounds === 3) full++;
+    });
+    const total3 = g.list.length * 3;
+    const done3 = cnt[0] + cnt[1] + cnt[2];
+    S1.push([CB(g.floor), CB(g.list.length), CB(cnt[0]), CB(cnt[1]), CB(cnt[2]), CB(full), CB(items),
+      CB(total3 ? Math.round(done3 / total3 * 100) + '%' : '—')]);
+    tot.ppl += g.list.length;
+    tot.r[0] += cnt[0]; tot.r[1] += cnt[1]; tot.r[2] += cnt[2];
+    tot.full += full; tot.items += items;
+  });
+  const tot3 = tot.ppl * 3;
+  const done3 = tot.r[0] + tot.r[1] + tot.r[2];
+  S1.push([H('合计'), H(tot.ppl), H(tot.r[0]), H(tot.r[1]), H(tot.r[2]), H(tot.full), H(tot.items),
+    H(tot3 ? Math.round(done3 / tot3 * 100) + '%' : '—')]);
+
+  const miss = [];
+  gs.forEach(g => g.list.forEach(e => {
+    const lack = ROUNDS.filter(r => !ckGet(mk, e.id, r.k));
+    if (lack.length) miss.push({ floor: g.floor, name: e.name, lack });
+  }));
+  S1.push([]);
+  const base = S1.length + 1;
+  S1.push([{ v: `未打全名单（共 ${miss.length} 人）`, s: 7 }]);
+  if (miss.length) {
+    S1.push([H('楼层'), H('姓名'), H('缺哪几轮'), H('已完成')]);
+    miss.forEach(m => S1.push([CB(m.floor), CL(m.name), CB(m.lack.map(r => r.n).join('、')), CB((3 - m.lack.length) + '/3')]));
+  } else {
+    S1.push([CL('本月全部人员 3 轮均已打卡')]);
+  }
+
+  /* —— 表2 个人打卡明细：一人一块，三轮逐项展开 —— */
+  S2.push([{ v: `${mkLabel(mk)} 个人打卡明细`, s: 2 }]);
+  S2.push([{ v: `共 ${state.elders.length} 人 · 每人 3 轮，逐项列出完成情况（✓ = 已完成）· 导出 ${at}`, s: 3 }]);
+  S2.push([]);
+  S2.push([H('序号'), H('楼层'), H('姓名'), H('轮次'), H('日期'), H('时间')].concat(ITEMS.map(it => H(it.n)), [H('项数'), H('备注'), H('本月项数')]));
+  const mg = ['A1:O1', 'A2:O2'];
+  let idx = 0, recs = 0;
+  gs.forEach(g => g.list.forEach(e => {
+    idx++;
+    const start = S2.length + 1;
+    const vs = ROUNDS.map(r => ckGet(mk, e.id, r.k));
+    const monthItems = vs.reduce((a, v) => a + (v ? Object.keys(v.items || {}).length : 0), 0);
+    vs.forEach((v, ri) => {
+      const items = (v && v.items) || {};
+      const n = Object.keys(items).length;
+      if (v) recs++;
+      const st = v ? 4 : 8;            // 8 = 未打卡的灰字
+      const first = ri === 0;
+      const row = [
+        { v: first ? idx : '', s: 4 },
+        { v: first ? g.floor : '', s: 4 },
+        { v: first ? e.name : '', s: 4 },
+        { v: ROUNDS[ri].n, s: st },
+        { v: v ? (v.d || '—') : '未打卡', s: st },
+        { v: v ? (v.t || '—') : '', s: st }
+      ];
+      ITEMS.forEach(it => row.push(items[it.k] ? OK('✓') : { v: '', s: st }));
+      row.push({ v: v ? n : '', s: st });
+      row.push({ v: v && v.note ? v.note : '', s: v ? 5 : 8 });
+      row.push({ v: first ? monthItems : '', s: 4 });
+      S2.push(row);
+    });
+    mg.push(`A${start}:A${start + 2}`, `B${start}:B${start + 2}`, `C${start}:C${start + 2}`, `O${start}:O${start + 2}`);
+  }));
+
+  return {
+    sheets: [
+      { name: '汇总', rows: S1, cols: [11, 8, 10, 10, 10, 10, 10, 9], merges: ['A1:H1', 'A2:H2', `A${base}:D${base}`], rowH: { 1: 26 }, defStyle: 4 },
+      {
+        name: '个人打卡明细', rows: S2,
+        cols: [6, 9, 11, 7, 13, 8, 8, 8, 8, 9, 8, 8, 8, 22, 10],
+        merges: mg, freeze: 4, rowH: { 1: 26 }, defStyle: 4
+      }
+    ],
+    records: recs,
+    done: done3,
+    people: tot.ppl
+  };
+}
+
+function exportCheckinXlsx(mk) {
+  if (!state.elders.length) { toast('还没有老人名单，先添加名单'); return; }
+  let pack;
+  try { pack = checkinXlsxSheets(mk); }
+  catch (err) { toast('导出失败：' + (err && err.message ? err.message : err)); return; }
+  if (!pack.records && !confirm(`${mkLabel(mk)} 还没有任何打卡记录，仍然导出空表？`)) return;
+  let blob;
+  try { blob = xlWorkbook(pack.sheets); }
+  catch (err) { toast('生成文件失败：' + (err && err.message ? err.message : err)); return; }
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `护理打卡_${mkLabel(mk)}.xlsx`;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 8000);
+  toast(`已导出 ${mkLabel(mk)} · ${pack.people} 人 ${pack.records} 条记录`);
+}
 
 /* ==================== 固定缩放（防止误触放大） ==================== */
 // iOS Safari 会忽略 user-scalable=no，这里手动拦掉双指缩放
