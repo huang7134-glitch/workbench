@@ -155,6 +155,15 @@ ul{list-style:none}
 .ename{flex:1;min-width:0;text-align:left;display:flex;flex-direction:column;gap:1px}
 .ename>span{font-size:15px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .ename>em{font-style:normal;font-size:11px;color:var(--ink3)}
+/* 人员状态：新入住 / 已退住 一律标红，一眼能看出来 */
+.erow.tnew .ename>span{color:var(--brick);font-weight:600}
+.erow.tout .ename>span{color:var(--brick);opacity:.5;text-decoration:line-through}
+.erow.tout .rc{opacity:.55}
+.tbadge{display:inline-block;font-style:normal;font-size:9.5px;line-height:1;padding:3px 5px;
+  border-radius:5px;margin-left:5px;vertical-align:1px;font-weight:500;letter-spacing:.2px}
+.tbadge.tnew{color:#fff;background:var(--brick)}
+.tbadge.tout{color:var(--brick);background:var(--brick-2);border:1px solid rgba(180,92,72,.4)}
+.elist .tbadge{margin-left:6px}
 .rounds{display:flex;gap:6px}
 .rc{width:56px;border:1px solid var(--line);background:#fff;border-radius:11px;
   padding:6px 0 5px;text-align:center;line-height:1.15;transition:.15s;position:relative}
@@ -433,6 +442,11 @@ function load() {
   if (!s || typeof s !== 'object') s = JSON.parse(JSON.stringify(DEFAULT));
   const st = Object.assign(JSON.parse(JSON.stringify(DEFAULT)), s);
   if (!Array.isArray(st.elders)) st.elders = [];
+  // 人员状态：'' 正常 / 'new' 新入住 / 'out' 已退住（退住不计入打卡统计）
+  st.elders.forEach(e => {
+    if (!e || typeof e !== 'object') return;
+    if (e.tag !== 'new' && e.tag !== 'out') e.tag = '';
+  });
   if (!Array.isArray(st.bills)) st.bills = [];
   if (!Array.isArray(st.periods)) st.periods = [];
   if (!Array.isArray(st.removedSeeds)) st.removedSeeds = [];
@@ -483,7 +497,7 @@ function mergeSeed() {
     names.split(/\s+/).filter(Boolean).forEach(n => {
       if (have.has(n)) { const e = have.get(n); if (!e.floor) e.floor = floor; return; }
       if (gone.has(n)) return;
-      state.elders.push({ id: uid(), name: n, floor });
+      state.elders.push({ id: uid(), name: n, floor, tag: '' });
       added++;
     });
   });
@@ -504,7 +518,8 @@ const ITEMS = [
   { k: 'turn', n: '翻身' },
   { k: 'nail', n: '剪指甲' },
   { k: 'water', n: '喂水' },
-  { k: 'shave', n: '刮胡子' }
+  { k: 'shave', n: '刮胡子' },
+  { k: 'hair', n: '剃头发' }
 ];
 
 function ckGet(mk, eid, r) {
@@ -549,10 +564,13 @@ function ckClear(mk, eid, r) {
   if (!Object.keys(m[eid]).length) delete m[eid];
   save();
 }
+/* 在住人员：已退住的不计入打卡统计，但名单里仍然保留、可查历史 */
+function liveElders() { return state.elders.filter(e => e.tag !== 'out'); }
 function ckStats(mk) {
-  const total = state.elders.length * 3;
+  const live = liveElders();
+  const total = live.length * 3;
   let done = 0;
-  state.elders.forEach(e => ROUNDS.forEach(r => { if (ckGet(mk, e.id, r.k)) done++; }));
+  live.forEach(e => ROUNDS.forEach(r => { if (ckGet(mk, e.id, r.k)) done++; }));
   return { total, done, pct: total ? Math.round(done / total * 100) : 0 };
 }
 function curRound(d = new Date()) {
@@ -574,7 +592,7 @@ function floorGroups() {
   });
   const order = [...FLOORS, '未分组'].filter(f => g[f]);
   Object.keys(g).forEach(f => { if (!order.includes(f)) order.push(f); });
-  return order.map(f => ({ floor: f, list: g[f] }));
+  return order.map(f => ({ floor: f, list: g[f], live: g[f].filter(e => e.tag !== 'out') }));
 }
 function personStat(e, mk) {
   let rounds = 0, items = 0;
@@ -812,6 +830,12 @@ function render() {
 }
 
 /* ---------- 打卡 ---------- */
+/* 人员状态小标签：新入住 / 已退住 一律标红，一眼能看出来 */
+function tagBadge(e) {
+  if (e.tag === 'new') return '<i class="tbadge tnew">新入住</i>';
+  if (e.tag === 'out') return '<i class="tbadge tout">已退住</i>';
+  return '';
+}
 function ckRow(e) {
   const ps = personStat(e, ckMonth);
   const chips = ROUNDS.map(rd => {
@@ -820,9 +844,9 @@ function ckRow(e) {
     return `<button class="rc ${v ? 'on' : ''} ${n ? 'hasitems' : ''}" data-act="ck" data-eid="${e.id}" data-r="${rd.k}">
       <b>${rd.n}</b><span>${v ? fmtMD(v.d) : '—'}</span></button>`;
   }).join('');
-  return `<div class="erow" data-name="${esc(e.name)}">
+  return `<div class="erow${e.tag ? ' t' + e.tag : ''}" data-name="${esc(e.name)}">
     <button class="ename" data-act="detail" data-eid="${e.id}">
-      <span>${esc(e.name)}</span>
+      <span>${esc(e.name)}${tagBadge(e)}</span>
       ${ps.rounds ? `<em>${ps.rounds}/3 次${ps.items ? ' · ' + ps.items + ' 项' : ''}</em>` : ''}
     </button>
     <div class="rounds">${chips}</div>
@@ -833,10 +857,13 @@ function viewCheckin() {
   const s = ckStats(ckMonth);
   const isNow = ckMonth === mkOf(todayStr());
   const r = activeRound();
-  const rdDone = state.elders.filter(e => ckGet(ckMonth, e.id, r.k)).length;
-  const rdPct = state.elders.length ? Math.round(rdDone / state.elders.length * 100) : 0;
+  const live = liveElders();
+  const liveN = live.length;
+  const outN = state.elders.length - liveN;
+  const rdDone = live.filter(e => ckGet(ckMonth, e.id, r.k)).length;
+  const rdPct = liveN ? Math.round(rdDone / liveN * 100) : 0;
   const hint = isNow
-    ? `本次打卡期 ${r.a}–${Math.min(r.b, daysInMonth(ckMonth))} 日<br>${r.n} · ${state.elders.length} 人`
+    ? `本次打卡期 ${r.a}–${Math.min(r.b, daysInMonth(ckMonth))} 日<br>${r.n} · ${liveN} 人${outN ? `<br>已退住 ${outN} 人不计入` : ''}`
     : `历史月份 · 补录 ${r.n}`;
 
   const gs = floorGroups();
@@ -859,19 +886,20 @@ function viewCheckin() {
       if (ckFloor !== 'all' && ckFloor !== g.floor) return '';
       const shown = q ? g.list.filter(e => e.name.includes(q)) : g.list;
       if (!shown.length) return '';
-      const done = g.list.reduce((a, e) => a + personStat(e, ckMonth).rounds, 0);
-      const rdF = g.list.filter(e => ckGet(ckMonth, e.id, r.k)).length;
+      const done = g.live.reduce((a, e) => a + personStat(e, ckMonth).rounds, 0);
+      const rdF = g.live.filter(e => ckGet(ckMonth, e.id, r.k)).length;
+      const fOut = g.list.length - g.live.length;
       const open = q ? true : (ckOpen[g.floor] !== undefined ? ckOpen[g.floor] : defOpen);
       return `<section class="floor ${open ? 'open' : ''}" data-floor="${esc(g.floor)}">
         <div class="fhead" data-act="fold" data-floor="${esc(g.floor)}">
           <span class="fname">${esc(g.floor)}</span>
-          <span class="fstat num">${done}/${g.list.length * 3}</span>
+          <span class="fstat num">${done}/${g.live.length * 3}</span>
           <span class="fchev">›</span>
         </div>
         <div class="floor-b">
           <div class="fbar">
-            <span class="tiny">${g.list.length} 人 · 本轮 ${rdF} 人已打卡</span>
-            <button class="mini" data-act="bulk" data-floor="${esc(g.floor)}">本轮全打</button>
+            <span class="tiny">${g.live.length} 人${fOut ? `（已退住 ${fOut}）` : ''} · 本轮 ${rdF} 人已打卡</span>
+            <button class="mini" data-act="bulk" data-floor="${esc(g.floor)}" ${g.live.length ? '' : 'disabled'}>本轮全打</button>
           </div>
           ${shown.map(ckRow).join('')}
         </div>
@@ -890,7 +918,7 @@ function viewCheckin() {
     <div class="row" style="align-items:flex-end">
       <div>
         <div class="big num">${rdPct}<small>%</small></div>
-        <div class="tiny" style="margin-top:2px">本轮 ${rdDone} / ${state.elders.length} 人 · 本月 ${s.done} / ${s.total} 次</div>
+        <div class="tiny" style="margin-top:2px">本轮 ${rdDone} / ${liveN} 人 · 本月 ${s.done} / ${s.total} 次</div>
       </div>
       <div class="tiny" style="text-align:right">${hint}</div>
     </div>
@@ -912,7 +940,7 @@ function viewCheckin() {
   </div>
 
   <div class="row" style="margin:14px 2px 8px">
-    <div class="sec" style="margin:0">名单 · ${state.elders.length} 人</div>
+    <div class="sec" style="margin:0">名单 · ${state.elders.length} 人${outN ? `（在住 ${liveN}）` : ''}</div>
     <button class="btn ghost" data-act="roster" style="font-size:13px">管理</button>
   </div>
   ${body}
@@ -922,14 +950,14 @@ function viewCheckin() {
     ${[-1, -2, -3, -4, -5, -6].map(i => {
       const mk = addMonths(ckMonth, i);
       const st = ckStats(mk);
-      const has = state.elders.length > 0;
+      const has = liveN > 0;
       return `<div class="catbar">
         <div class="r"><span class="muted">${mkLabel(mk)}</span><span class="num tiny">${has ? st.done + '/' + st.total : '—'}</span></div>
         <div class="t"><i style="width:${has ? st.pct : 0}%;background:var(--accent)"></i></div>
       </div>`;
     }).join('')}
   </div>
-  <p class="note" style="padding:0 4px">点「月初 / 月中 / 月末」快速打卡，再点一次取消；点姓名可逐项记录洗脸、梳头、翻身、剪指甲、喂水、刮胡子。上面的「记录到」可以改成任意日期和时刻，补录以前的打卡也能精确到几点几分。</p>`;
+  <p class="note" style="padding:0 4px">点「月初 / 月中 / 月末」快速打卡，再点一次取消；点姓名可逐项记录${ITEMS.map(i => i.n).join('、')}。上面的「记录到」可以改成任意日期和时刻，补录以前的打卡也能精确到几点几分。点姓名进去还能把某人标成「新入住」或「已退住」，名单里会标红。</p>`;
 }
 
 /* ---------- 学习 ---------- */
@@ -1285,7 +1313,7 @@ function viewMore() {
   <div class="card">
     <div class="sec" style="margin:0 0 10px">老人名单</div>
     <div class="row">
-      <div class="muted">共 ${state.elders.length} 人 · 每人每月 3 次打卡</div>
+      <div class="muted">共 ${state.elders.length} 人 · 每人每月 3 次打卡${state.elders.filter(e => e.tag === 'out').length ? `（已退住 ${state.elders.filter(e => e.tag === 'out').length} 人不计入）` : ''}</div>
       <button class="btn sm line" data-act="roster">管理</button>
     </div>
   </div>
@@ -1351,7 +1379,7 @@ function rosterSheet() {
     <div style="margin-top:16px">
       ${!state.elders.length ? '<div class="tiny" style="text-align:center;padding:20px 0">名单为空</div>' :
         gs.map(g => `<div class="sec" style="margin:14px 0 4px">${esc(g.floor)} · ${g.list.length} 人</div>
-          <ul class="elist">${g.list.map(e => `<li><span>${esc(e.name)}</span><button class="tiny" data-act="delelder" data-id="${e.id}" style="color:var(--brick)">删除</button></li>`).join('')}</ul>`).join('')}
+          <ul class="elist">${g.list.map(e => `<li><span>${esc(e.name)}${tagBadge(e)}</span><button class="tiny" data-act="delelder" data-id="${e.id}" style="color:var(--brick)">删除</button></li>`).join('')}</ul>`).join('')}
     </div>
     <p class="note" style="margin-top:14px">删除成员会同时清除其历史打卡记录。共 ${state.elders.length} 人。</p>`);
 }
@@ -1370,7 +1398,7 @@ function addEldersFromInput() {
   toast(n ? `已添加 ${n} 人 · ${rosterFloor}` : '都已存在');
 }
 
-/* ---------- 打卡明细（6 个护理项） ---------- */
+/* ---------- 打卡明细（护理项见 ITEMS，当前 7 项） ---------- */
 /* 三次一览里那一行：具体日期 + 时刻 */
 function ovDateHTML(v) {
   if (!v) return '<b class="none">未打卡</b>';
@@ -1384,7 +1412,12 @@ function detailHTML() {
   const n = Object.keys(items).length;
   return `
   <div class="sheet-h"><h3>${esc(e.name)}</h3><button class="x" data-act="close">关闭</button></div>
-  <div class="tiny" style="margin:-8px 0 14px">${esc(e.floor || '未分组')} · ${mkLabel(detail.mk)}</div>
+  <div class="tiny" style="margin:-8px 0 10px">${esc(e.floor || '未分组')} · ${mkLabel(detail.mk)}</div>
+  <div class="chips" style="margin-bottom:16px">
+    <button class="chip ${!e.tag ? 'on' : ''}" data-act="etag" data-tag="">正常在住</button>
+    <button class="chip ${e.tag === 'new' ? 'on' : ''}" data-act="etag" data-tag="new" ${e.tag === 'new' ? 'style="background:var(--brick);border-color:var(--brick);color:#fff"' : ''}>新入住</button>
+    <button class="chip ${e.tag === 'out' ? 'on' : ''}" data-act="etag" data-tag="out" ${e.tag === 'out' ? 'style="background:var(--brick);border-color:var(--brick);color:#fff"' : ''}>已退住</button>
+  </div>
   <table class="ov">
     <tr>
       <th>三次一览</th>
@@ -1407,7 +1440,7 @@ function detailHTML() {
       return `<button class="chip ${detail.r === rd.k ? 'on' : ''}" data-act="dround" data-r="${rd.k}">${rd.n}${cnt ? ' · ' + cnt : ''}</button>`;
     }).join('')}
   </div>
-  <div class="sec" style="margin:0 0 10px">打卡项 <span id="dCount">${n ? `· 已记 ${n} / 6` : '· 未记录'}</span></div>
+  <div class="sec" style="margin:0 0 10px">打卡项 <span id="dCount">${n ? `· 已记 ${n} / ${ITEMS.length}` : '· 未记录'}</span></div>
   <div class="chips" style="margin-bottom:16px">
     ${ITEMS.map(it => `<button class="chip ${items[it.k] ? 'on' : ''}" data-act="ditem" data-k="${it.k}">${it.n}</button>`).join('')}
   </div>
@@ -1627,7 +1660,7 @@ document.addEventListener('click', e => {
   if (a === 'bulk') {
     const f = el.dataset.floor;
     const r = activeRound();
-    const list = state.elders.filter(x => (x.floor || '未分组') === f && !ckGet(ckMonth, x.id, r.k));
+    const list = state.elders.filter(x => (x.floor || '未分组') === f && x.tag !== 'out' && !ckGet(ckMonth, x.id, r.k));
     if (!list.length) { toast('本层本轮都已打卡'); return; }
     if (!confirm(`把「${f}」${list.length} 位老人标记为「${mkLabel(ckMonth)} · ${r.n}」已打卡？\n记录时间：${fmtCNF(ckDate)} ${ckTime}`)) return;
     list.forEach(x => ckEnsure(ckMonth, x.id, r.k));
@@ -1637,6 +1670,19 @@ document.addEventListener('click', e => {
   }
   if (a === 'detail') { openDetail(el.dataset.eid); return; }
   if (a === 'dround') { detail.r = el.dataset.r; renderDetail(); return; }
+  if (a === 'etag') {
+    const t = el.dataset.tag || '';
+    const e = state.elders.find(x => x.id === detail.eid);
+    if (!e) return;
+    e.tag = t;
+    save(true);
+    renderDetail();
+    render();
+    toast(t === 'new' ? `${e.name} · 已标记新入住`
+      : t === 'out' ? `${e.name} · 已标记退住，不再计入打卡统计`
+      : `${e.name} · 恢复正常在住`);
+    return;
+  }
   if (a === 'ditem') {
     const k = el.dataset.k;
     const had = !!ckGet(detail.mk, detail.eid, detail.r);
@@ -1648,7 +1694,7 @@ document.addEventListener('click', e => {
     const n = Object.keys(v.items).length;
     el.classList.toggle('on', !!v.items[k]);
     const c = $('#dCount');
-    if (c) c.textContent = n ? `· 已记 ${n} / 6` : '· 未记录';
+    if (c) c.textContent = n ? `· 已记 ${n} / ${ITEMS.length}` : '· 未记录';
     const tab = $(`.chip[data-act="dround"][data-r="${detail.r}"]`);
     if (tab) {
       const rn = ROUNDS.find(x => x.k === detail.r);
@@ -2002,9 +2048,9 @@ const xlEsc = s => String(s == null ? '' : s)
   .replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F]/g, '')
   .replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&apos;' }[c]));
 
-/* 单元格样式索引：0 默认 / 1 表头 / 2 大标题 / 3 灰字 / 4 居中框 / 5 左对齐框 / 6 绿底框 / 7 加粗 */
+/* 单元格样式索引：0 默认 / 1 表头 / 2 大标题 / 3 灰字 / 4 居中框 / 5 左对齐框 / 6 绿底框 / 7 加粗 / 8 灰字框 / 9 红字框 */
 const XL_STYLES = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><fonts count="4"><font><sz val="11"/><color rgb="FF2B2B28"/><name val="等线"/></font><font><b/><sz val="11"/><color rgb="FF2B2B28"/><name val="等线"/></font><font><b/><sz val="15"/><color rgb="FF2B2B28"/><name val="等线"/></font><font><sz val="10"/><color rgb="FF8A8A80"/><name val="等线"/></font></fonts><fills count="4"><fill><patternFill patternType="none"/></fill><fill><patternFill patternType="gray125"/></fill><fill><patternFill patternType="solid"><fgColor rgb="FFF0F0E6"/><bgColor indexed="64"/></patternFill></fill><fill><patternFill patternType="solid"><fgColor rgb="FFEAF2EA"/><bgColor indexed="64"/></patternFill></fill></fills><borders count="2"><border><left/><right/><top/><bottom/><diagonal/></border><border><left style="thin"><color rgb="FFDCDCD2"/></left><right style="thin"><color rgb="FFDCDCD2"/></right><top style="thin"><color rgb="FFDCDCD2"/></top><bottom style="thin"><color rgb="FFDCDCD2"/></bottom><diagonal/></border></borders><cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs><cellXfs count="9"><xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/><xf numFmtId="0" fontId="1" fillId="2" borderId="1" xfId="0" applyFont="1" applyFill="1" applyBorder="1" applyAlignment="1"><alignment horizontal="center" vertical="center" wrapText="1"/></xf><xf numFmtId="0" fontId="2" fillId="0" borderId="0" xfId="0" applyFont="1"/><xf numFmtId="0" fontId="3" fillId="0" borderId="0" xfId="0" applyFont="1"/><xf numFmtId="0" fontId="0" fillId="0" borderId="1" xfId="0" applyBorder="1" applyAlignment="1"><alignment horizontal="center" vertical="center"/></xf><xf numFmtId="0" fontId="0" fillId="0" borderId="1" xfId="0" applyBorder="1" applyAlignment="1"><alignment horizontal="left" vertical="center"/></xf><xf numFmtId="0" fontId="0" fillId="3" borderId="1" xfId="0" applyFill="1" applyBorder="1" applyAlignment="1"><alignment horizontal="center" vertical="center"/></xf><xf numFmtId="0" fontId="1" fillId="0" borderId="0" xfId="0" applyFont="1"/><xf numFmtId="0" fontId="3" fillId="0" borderId="1" xfId="0" applyFont="1" applyBorder="1" applyAlignment="1"><alignment horizontal="center" vertical="center"/></xf></cellXfs><cellStyles count="1"><cellStyle name="Normal" xfId="0" builtinId="0"/></cellStyles></styleSheet>`;
+<styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><fonts count="5"><font><sz val="11"/><color rgb="FF2B2B28"/><name val="等线"/></font><font><b/><sz val="11"/><color rgb="FF2B2B28"/><name val="等线"/></font><font><b/><sz val="15"/><color rgb="FF2B2B28"/><name val="等线"/></font><font><sz val="10"/><color rgb="FF8A8A80"/><name val="等线"/></font><font><sz val="11"/><color rgb="FFB45C48"/><name val="等线"/></font></fonts><fills count="4"><fill><patternFill patternType="none"/></fill><fill><patternFill patternType="gray125"/></fill><fill><patternFill patternType="solid"><fgColor rgb="FFF0F0E6"/><bgColor indexed="64"/></patternFill></fill><fill><patternFill patternType="solid"><fgColor rgb="FFEAF2EA"/><bgColor indexed="64"/></patternFill></fill></fills><borders count="2"><border><left/><right/><top/><bottom/><diagonal/></border><border><left style="thin"><color rgb="FFDCDCD2"/></left><right style="thin"><color rgb="FFDCDCD2"/></right><top style="thin"><color rgb="FFDCDCD2"/></top><bottom style="thin"><color rgb="FFDCDCD2"/></bottom><diagonal/></border></borders><cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs><cellXfs count="10"><xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/><xf numFmtId="0" fontId="1" fillId="2" borderId="1" xfId="0" applyFont="1" applyFill="1" applyBorder="1" applyAlignment="1"><alignment horizontal="center" vertical="center" wrapText="1"/></xf><xf numFmtId="0" fontId="2" fillId="0" borderId="0" xfId="0" applyFont="1"/><xf numFmtId="0" fontId="3" fillId="0" borderId="0" xfId="0" applyFont="1"/><xf numFmtId="0" fontId="0" fillId="0" borderId="1" xfId="0" applyBorder="1" applyAlignment="1"><alignment horizontal="center" vertical="center"/></xf><xf numFmtId="0" fontId="0" fillId="0" borderId="1" xfId="0" applyBorder="1" applyAlignment="1"><alignment horizontal="left" vertical="center"/></xf><xf numFmtId="0" fontId="0" fillId="3" borderId="1" xfId="0" applyFill="1" applyBorder="1" applyAlignment="1"><alignment horizontal="center" vertical="center"/></xf><xf numFmtId="0" fontId="1" fillId="0" borderId="0" xfId="0" applyFont="1"/><xf numFmtId="0" fontId="3" fillId="0" borderId="1" xfId="0" applyFont="1" applyBorder="1" applyAlignment="1"><alignment horizontal="center" vertical="center"/></xf><xf numFmtId="0" fontId="4" fillId="0" borderId="1" xfId="0" applyFont="1" applyBorder="1" applyAlignment="1"><alignment horizontal="center" vertical="center"/></xf></cellXfs><cellStyles count="1"><cellStyle name="Normal" xfId="0" builtinId="0"/></cellStyles></styleSheet>`;
 
 function xlCellXml(v, s, ref) {
   const st = s ? ` s="${s}"` : '';
@@ -2095,7 +2141,7 @@ function checkinXlsxSheets(mk) {
   gs.forEach(g => {
     const cnt = [0, 0, 0];
     let full = 0, items = 0;
-    g.list.forEach(e => {
+    g.live.forEach(e => {
       let rounds = 0;
       ROUNDS.forEach((r, i) => {
         const v = ckGet(mk, e.id, r.k);
@@ -2103,11 +2149,11 @@ function checkinXlsxSheets(mk) {
       });
       if (rounds === 3) full++;
     });
-    const total3 = g.list.length * 3;
+    const total3 = g.live.length * 3;
     const done3 = cnt[0] + cnt[1] + cnt[2];
-    S1.push([CB(g.floor), CB(g.list.length), CB(cnt[0]), CB(cnt[1]), CB(cnt[2]), CB(full), CB(items),
+    S1.push([CB(g.floor), CB(g.live.length), CB(cnt[0]), CB(cnt[1]), CB(cnt[2]), CB(full), CB(items),
       CB(total3 ? Math.round(done3 / total3 * 100) + '%' : '—')]);
-    tot.ppl += g.list.length;
+    tot.ppl += g.live.length;
     tot.r[0] += cnt[0]; tot.r[1] += cnt[1]; tot.r[2] += cnt[2];
     tot.full += full; tot.items += items;
   });
@@ -2117,11 +2163,21 @@ function checkinXlsxSheets(mk) {
     H(tot3 ? Math.round(done3 / tot3 * 100) + '%' : '—')]);
 
   const miss = [];
-  gs.forEach(g => g.list.forEach(e => {
+  gs.forEach(g => g.live.forEach(e => {
     const lack = ROUNDS.filter(r => !ckGet(mk, e.id, r.k));
     if (lack.length) miss.push({ floor: g.floor, name: e.name, lack });
   }));
   S1.push([]);
+  const newList = state.elders.filter(e => e.tag === 'new');
+  const outList = state.elders.filter(e => e.tag === 'out');
+  if (newList.length || outList.length) {
+    S1.push([{
+      v: `人员变动：新入住 ${newList.length} 人${newList.length ? '（' + newList.map(e => e.name).join('、') + '）' : ''}　`
+        + `已退住 ${outList.length} 人${outList.length ? '（' + outList.map(e => e.name).join('、') + '）' : ''}　已退住不计入统计`,
+      s: 3
+    }]);
+    S1.push([]);
+  }
   const base = S1.length + 1;
   S1.push([{ v: `未打全名单（共 ${miss.length} 人）`, s: 7 }]);
   if (miss.length) {
@@ -2133,26 +2189,33 @@ function checkinXlsxSheets(mk) {
 
   /* —— 表2 个人打卡明细：一人一块，三轮逐项展开 —— */
   S2.push([{ v: `${mkLabel(mk)} 个人打卡明细`, s: 2 }]);
-  S2.push([{ v: `共 ${state.elders.length} 人 · 每人 3 轮，逐项列出完成情况（✓ = 已完成）· 导出 ${at}`, s: 3 }]);
+  S2.push([{
+    v: `共 ${state.elders.length} 人（在住 ${liveElders().length} 人）· 每人 3 轮，逐项列出完成情况（✓ = 已完成）· 导出 ${at}`,
+    s: 3
+  }]);
   S2.push([]);
-  S2.push([H('序号'), H('楼层'), H('姓名'), H('轮次'), H('日期'), H('时间')].concat(ITEMS.map(it => H(it.n)), [H('项数'), H('备注'), H('本月项数')]));
-  const mg = ['A1:O1', 'A2:O2'];
+  S2.push([H('序号'), H('楼层'), H('姓名'), H('状态'), H('轮次'), H('日期'), H('时间')]
+    .concat(ITEMS.map(it => H(it.n)), [H('项数'), H('备注'), H('本月项数')]));
+  const mg = ['A1:Q1', 'A2:Q2'];
   let idx = 0, recs = 0;
   gs.forEach(g => g.list.forEach(e => {
     idx++;
     const start = S2.length + 1;
     const vs = ROUNDS.map(r => ckGet(mk, e.id, r.k));
     const monthItems = vs.reduce((a, v) => a + (v ? Object.keys(v.items || {}).length : 0), 0);
+    const outP = e.tag === 'out';
+    const tagTxt = e.tag === 'new' ? '新入住' : outP ? '已退住' : '';
     vs.forEach((v, ri) => {
       const items = (v && v.items) || {};
       const n = Object.keys(items).length;
       if (v) recs++;
-      const st = v ? 4 : 8;            // 8 = 未打卡的灰字
+      const st = (v && !outP) ? 4 : 8;   // 8 = 灰字（未打卡 / 已退住）
       const first = ri === 0;
       const row = [
         { v: first ? idx : '', s: 4 },
         { v: first ? g.floor : '', s: 4 },
         { v: first ? e.name : '', s: 4 },
+        { v: first ? tagTxt : '', s: first && tagTxt ? 9 : 4 },
         { v: ROUNDS[ri].n, s: st },
         { v: v ? (v.d || '—') : '未打卡', s: st },
         { v: v ? (v.t || '—') : '', s: st }
@@ -2163,7 +2226,8 @@ function checkinXlsxSheets(mk) {
       row.push({ v: first ? monthItems : '', s: 4 });
       S2.push(row);
     });
-    mg.push(`A${start}:A${start + 2}`, `B${start}:B${start + 2}`, `C${start}:C${start + 2}`, `O${start}:O${start + 2}`);
+    mg.push(`A${start}:A${start + 2}`, `B${start}:B${start + 2}`, `C${start}:C${start + 2}`,
+      `D${start}:D${start + 2}`, `Q${start}:Q${start + 2}`);
   }));
 
   return {
@@ -2171,7 +2235,7 @@ function checkinXlsxSheets(mk) {
       { name: '汇总', rows: S1, cols: [11, 8, 10, 10, 10, 10, 10, 9], merges: ['A1:H1', 'A2:H2', `A${base}:D${base}`], rowH: { 1: 26 }, defStyle: 4 },
       {
         name: '个人打卡明细', rows: S2,
-        cols: [6, 9, 11, 7, 13, 8, 8, 8, 8, 9, 8, 8, 8, 22, 10],
+        cols: [6, 9, 11, 9, 7, 13, 8, 8, 8, 8, 9, 8, 8, 9, 8, 22, 10],
         merges: mg, freeze: 4, rowH: { 1: 26 }, defStyle: 4
       }
     ],
